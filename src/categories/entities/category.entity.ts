@@ -10,7 +10,7 @@ export class Category {
   @Index()
   name: string;
 
-  @Column({ nullable: true })
+  @Column()
   icon: string;
 
   @Column({ default: true })

@@ -8,6 +8,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@webundsoehne/nest-fastify-file-upload';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
@@ -21,23 +22,24 @@ export class CategoriesController {
 
   @Post()
   async create(@Body() createCategoryDto: CreateCategoryDto) {
-    return await this.categoriesService.create(createCategoryDto);
+    return this.categoriesService.create(createCategoryDto);
   }
 
-  @Post('/assignIcon')
-  @UseInterceptors(FileInterceptor('file'))
-  async assignIcon(@UploadedFile('file') file: MulterFile) {
-    return await this.categoriesService.assignIcon(file);
+  @Post('/:id/assignIcon')
+  @UseInterceptors(FileInterceptor('icon'))
+  async assignIcon(@Param('id') id: string, @UploadedFile() file?: MulterFile) {
+    if (!file) throw new BadRequestException(`Upload a file`);
+    return this.categoriesService.assignIcon(+id, file);
   }
 
   @Get()
   async findAll() {
-    return await this.categoriesService.findAll();
+    return this.categoriesService.findAll();
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return await this.categoriesService.findOne(+id);
+    return this.categoriesService.findOne(+id);
   }
 
   @Patch(':id')
@@ -45,11 +47,11 @@ export class CategoriesController {
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    return await this.categoriesService.update(+id, updateCategoryDto);
+    return this.categoriesService.update(+id, updateCategoryDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return await this.categoriesService.remove(+id);
+    return this.categoriesService.remove(+id);
   }
 }

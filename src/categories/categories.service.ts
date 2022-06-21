@@ -1,3 +1,4 @@
+import { FileUtils } from './../utils/file_utils';
 import { MulterFile } from './../../node_modules/@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface.d';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -16,6 +17,7 @@ export class CategoriesService {
   async create(createCategoryDto: CreateCategoryDto) {
     try {
       const newCategory = this.categoryRepository.create(createCategoryDto);
+      newCategory.icon = process.env.DEFAULT_ICON;
       return await this.categoryRepository.save(newCategory);
     } catch (error) {
       throw new BadRequestException(
@@ -24,32 +26,28 @@ export class CategoriesService {
     }
   }
 
-  async assignIcon(file: MulterFile) {
-    return 'lmao';
+  async assignIcon(id: number, file: MulterFile) {
+    const category = await this.categoryRepository.findOneBy({ id: id });
+    if (category) {
+      const file_data = await FileUtils.uploadFile(file);
+      category.icon = file_data.secure_url;
+    }
+    return category;
   }
 
   async findAll() {
-    return await this.categoryRepository.find();
+    return this.categoryRepository.find();
   }
 
   async findOne(id: number) {
-    return await this.categoryRepository.findOneBy({ id: id });
+    return this.categoryRepository.findOneBy({ id: id });
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+    return this.categoryRepository.update(id, updateCategoryDto);
   }
 
   async remove(id: number) {
-    return `This action removes a #${id} category`;
-  }
-
-  async validateNameUnique(name: string) {
-    const category = await this.categoryRepository.findOne({
-      where: [{ name: name }],
-    });
-
-    if (category)
-      throw new BadRequestException(`The Category: "${name}" already exists`);
+    return this.categoryRepository.delete(id);
   }
 }
