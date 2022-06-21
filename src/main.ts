@@ -14,6 +14,7 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
+    .addBearerAuth()
     .setTitle('Finances Donatello')
     .setDescription('Finances Donatello')
     .setVersion('1.0')

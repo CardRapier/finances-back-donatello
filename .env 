@@ -1,0 +1,11 @@
+DB_PASS=ZIZJwvIN3XIbAdAAblaj
+DEFAULT_ICON=https://res.cloudinary.com/datkm67qu/image/upload/v1655794060/finances-donatello/dkntwtfphg1ctkecez0p.svg
+CLOUDINARY_API_KEY=842935184554625
+ENVIRONMENT=DEV
+CLOUDINARY_SECRET_KEY=fkRgWNLO4qs_UdfVSVzir-i3P20
+DB=railway
+DB_USERNAME=postgres
+DB_PORT=7982
+CLOUDINARY_NAME=datkm67qu
+DB_HOST=containers-us-west-69.railway.app
+JWT_SECRET=finances_donatello
