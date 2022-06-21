@@ -18,7 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: process.env.DB_PASS,
       database: process.env.DB,
       synchronize: true,
-      entities: [Category],
+      autoLoadEntities: true,
     }),
     CategoriesModule,
   ],

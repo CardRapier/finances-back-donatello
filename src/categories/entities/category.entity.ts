@@ -1,14 +1,16 @@
-import { Column, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
+@Entity()
 export class Category {
   @PrimaryGeneratedColumn()
   @Index()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
+  @Index()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   icon: string;
 
   @Column({ default: true })
