@@ -1,4 +1,12 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+import { Action } from './../../actions/entities/action.entity';
 
 @Entity()
 export class User {
@@ -15,4 +23,7 @@ export class User {
 
   @Column()
   password: string;
+
+  @OneToMany(() => Action, (action) => action.category)
+  actions: Action[];
 }
