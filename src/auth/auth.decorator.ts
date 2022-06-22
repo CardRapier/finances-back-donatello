@@ -11,8 +11,8 @@ export const Auth = createParamDecorator(
     try {
       const request = ctx.switchToHttp().getRequest();
       const payload: PayloadToken = {
-        name: request.name,
-        id: request.id,
+        name: request.user.name,
+        userId: request.user.userId,
       };
       return payload;
     } catch (error) {

@@ -28,7 +28,7 @@ export class ActionsController {
     @Body() createActionDto: CreateActionDto,
     @Auth() payload: PayloadToken,
   ) {
-    return this.actionsService.create(createActionDto, payload.id);
+    return this.actionsService.create(createActionDto, payload.userId);
   }
 
   @Get()

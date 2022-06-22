@@ -9,9 +9,15 @@ import { User } from './entities/user.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '2d' },
+    JwtModule.registerAsync({
+      useFactory: () => {
+        return {
+          secret: process.env.JWT_SECRET,
+          signOptions: {
+            expiresIn: '2d',
+          },
+        };
+      },
     }),
   ],
   controllers: [AuthController],

@@ -14,11 +14,15 @@ export class ActionsService {
     private readonly actionRepository: Repository<Action>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly categoryRepository: CategoriesService,
+    private readonly categoryService: CategoriesService,
   ) {}
 
   async create(createActionDto: CreateActionDto, id: number) {
     const newAction = this.actionRepository.create(createActionDto);
+    const category = await this.categoryService.findOne(
+      createActionDto.categoryId,
+    );
+    newAction.category = category;
     const user = await this.userRepository.findOneBy({ id });
     newAction.user = user;
     return this.actionRepository.save(newAction);
