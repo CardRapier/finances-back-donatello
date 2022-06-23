@@ -2,7 +2,12 @@ import { FileUtils } from './../utils/file_utils';
 import { MulterFile } from './../../node_modules/@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface.d';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -40,6 +45,9 @@ export class CategoriesService {
   }
 
   async findOne(id: number) {
+    const category = await this.categoryRepository.findOneBy({ id: id });
+    if (category)
+      throw new HttpException('Category Not Found', HttpStatus.NOT_FOUND);
     return this.categoryRepository.findOneBy({ id: id });
   }
 

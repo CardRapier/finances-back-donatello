@@ -7,7 +7,7 @@ import {
 import { PayloadToken } from './interfaces/token';
 
 export const Auth = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): Partial<PayloadToken> => {
+  (_: unknown, ctx: ExecutionContext): Partial<PayloadToken> => {
     try {
       const request = ctx.switchToHttp().getRequest();
       const payload: PayloadToken = {

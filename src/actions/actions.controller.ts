@@ -32,25 +32,26 @@ export class ActionsController {
   }
 
   @Get()
-  async findAll() {
-    return this.actionsService.findAll();
+  async findAll(@Auth() payload: PayloadToken) {
+    return this.actionsService.findAll(payload.userId);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.actionsService.findOne(+id);
+  async findOne(@Param('id') id: string, @Auth() payload: PayloadToken) {
+    return this.actionsService.findOne(payload.userId, +id);
   }
 
   @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateActionDto: UpdateActionDto,
+    @Auth() payload: PayloadToken,
   ) {
-    return this.actionsService.update(+id, updateActionDto);
+    return this.actionsService.update(payload.userId, +id, updateActionDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.actionsService.remove(+id);
+  async remove(@Param('id') id: string, @Auth() payload: PayloadToken) {
+    return this.actionsService.remove(payload.userId, +id);
   }
 }

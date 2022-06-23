@@ -1,9 +1,10 @@
+import { ACTION_NOT_FOUND, NOT_USER_ACTION } from './actions.exceptions';
 import { CategoriesService } from './../categories/categories.service';
 import { User } from './../auth/entities/user.entity';
 import { Repository } from 'typeorm';
 import { Action } from './entities/action.entity';
 import { CreateActionDto } from './dto/create-action.dto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UpdateActionDto } from './dto/update-action.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -17,30 +18,43 @@ export class ActionsService {
     private readonly categoryService: CategoriesService,
   ) {}
 
-  async create(createActionDto: CreateActionDto, id: number) {
+  async create(createActionDto: CreateActionDto, userId: number) {
     const newAction = this.actionRepository.create(createActionDto);
     const category = await this.categoryService.findOne(
       createActionDto.categoryId,
     );
     newAction.category = category;
-    const user = await this.userRepository.findOneBy({ id });
+    const user = await this.userRepository.findOneBy({ id: userId });
     newAction.user = user;
     return this.actionRepository.save(newAction);
   }
 
-  async findAll() {
-    return `This action returns all actions`;
+  async findAll(userId: number) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    return this.actionRepository.findBy({ user });
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} action`;
+  async findOne(userId: number, id: number) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    return this.validateActionIsFromUser({ id }, user.id);
   }
 
-  async update(id: number, updateActionDto: UpdateActionDto) {
-    return `This action updates a #${id} action`;
+  async update(userId: number, id: number, updateActionDto: UpdateActionDto) {
+    this.validateActionIsFromUser({ id }, userId);
+    return this.actionRepository.update(id, updateActionDto);
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} action`;
+  async remove(userId: number, id: number) {
+    this.validateActionIsFromUser({ id }, userId);
+    return this.userRepository.delete(id);
+  }
+
+  async validateActionIsFromUser(options: any, userId: number) {
+    const action = await this.actionRepository.findOneBy(options);
+    if (!action)
+      throw new HttpException(ACTION_NOT_FOUND, HttpStatus.NOT_FOUND);
+    if (userId !== action.user.id)
+      throw new HttpException(NOT_USER_ACTION, HttpStatus.CONFLICT);
+    return action;
   }
 }
