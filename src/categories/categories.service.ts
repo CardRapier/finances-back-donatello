@@ -11,6 +11,7 @@ import {
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CATEGORY_NOT_FOUND, CATEGORY_EXISTS } from './categories.exceptions';
 
 @Injectable()
 export class CategoriesService {
@@ -25,9 +26,7 @@ export class CategoriesService {
       newCategory.icon = process.env.DEFAULT_ICON;
       return await this.categoryRepository.save(newCategory);
     } catch (error) {
-      throw new BadRequestException(
-        `The Category: "${createCategoryDto.name}" already exists`,
-      );
+      throw new BadRequestException(CATEGORY_EXISTS);
     }
   }
 
@@ -37,7 +36,7 @@ export class CategoriesService {
       const file_data = await FileUtils.uploadFile(file);
       category.icon = file_data.secure_url;
     }
-    return category;
+    return this.categoryRepository.update(id, category);
   }
 
   async findAll() {
@@ -46,12 +45,17 @@ export class CategoriesService {
 
   async findOne(id: number) {
     const category = await this.categoryRepository.findOneBy({ id: id });
-    if (category)
-      throw new HttpException('Category Not Found', HttpStatus.NOT_FOUND);
+    if (!category)
+      throw new HttpException(CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND);
     return this.categoryRepository.findOneBy({ id: id });
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    const nameCategory = await this.categoryRepository.findOneBy({
+      name: updateCategoryDto.name,
+    });
+    if (nameCategory && nameCategory.id !== id)
+      throw new HttpException(CATEGORY_EXISTS, HttpStatus.AMBIGUOUS);
     return this.categoryRepository.update(id, updateCategoryDto);
   }
 

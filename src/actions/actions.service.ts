@@ -31,7 +31,10 @@ export class ActionsService {
 
   async findAll(userId: number) {
     const user = await this.userRepository.findOneBy({ id: userId });
-    return this.actionRepository.findBy({ user });
+    return this.actionRepository.find({
+      where: { user: user },
+      relations: ['category'],
+    });
   }
 
   async findOne(userId: number, id: number) {
@@ -40,21 +43,30 @@ export class ActionsService {
   }
 
   async update(userId: number, id: number, updateActionDto: UpdateActionDto) {
-    this.validateActionIsFromUser({ id }, userId);
+    const action = await this.validateActionIsFromUser({ id }, userId);
+    if (action.category.id != updateActionDto.categoryId)
+      action.category = await this.categoryService.findOne(
+        updateActionDto.categoryId,
+      );
+    else delete updateActionDto.categoryId;
     return this.actionRepository.update(id, updateActionDto);
   }
 
   async remove(userId: number, id: number) {
-    this.validateActionIsFromUser({ id }, userId);
-    return this.userRepository.delete(id);
+    await this.validateActionIsFromUser({ id }, userId);
+    return this.actionRepository.delete(id);
   }
 
   async validateActionIsFromUser(options: any, userId: number) {
-    const action = await this.actionRepository.findOneBy(options);
+    const action = await this.actionRepository.findOne({
+      where: { ...options },
+      relations: ['user', 'category'],
+    });
     if (!action)
       throw new HttpException(ACTION_NOT_FOUND, HttpStatus.NOT_FOUND);
     if (userId !== action.user.id)
       throw new HttpException(NOT_USER_ACTION, HttpStatus.CONFLICT);
+    delete action.user;
     return action;
   }
 }

@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 
 import { Action } from './../../actions/entities/action.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -21,7 +22,7 @@ export class User {
   @Index()
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @OneToMany(() => Action, (action) => action.category)

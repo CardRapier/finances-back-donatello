@@ -28,9 +28,12 @@ export class AuthService {
 
   async loginUser(loginUser: LoginAuthDto) {
     const { email, password } = loginUser;
-    const user = await this.userRepository.findOneBy({ email });
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne();
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-
     const checkPassword = await compare(password, user.password);
     if (!checkPassword)
       throw new HttpException('Wrong Credentials', HttpStatus.FORBIDDEN);
