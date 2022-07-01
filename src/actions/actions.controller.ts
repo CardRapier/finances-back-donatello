@@ -16,6 +16,7 @@ import { CreateActionDto } from './dto/create-action.dto';
 import { UpdateActionDto } from './dto/update-action.dto';
 import { Auth } from 'src/auth/auth.decorator';
 
+ApiBearerAuth();
 @Controller('actions')
 @ApiBearerAuth()
 @ApiTags('actions')

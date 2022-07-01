@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 import { Action } from './../../actions/entities/action.entity';
-import { Exclude } from 'class-transformer';
+import { Debt } from './../../debts/entities/debt.entity';
 
 @Entity()
 export class User {
@@ -27,4 +27,7 @@ export class User {
 
   @OneToMany(() => Action, (action) => action.category)
   actions: Action[];
+
+  @OneToMany(() => Debt, (action) => action.user)
+  debts: Debt[];
 }

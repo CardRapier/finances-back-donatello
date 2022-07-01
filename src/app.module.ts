@@ -6,6 +6,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DebtsModule } from './debts/debts.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     CategoriesModule,
     AuthModule,
     ActionsModule,
+    DebtsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
